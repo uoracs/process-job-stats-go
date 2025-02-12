@@ -270,7 +270,7 @@ func calculateWeight(ctx context.Context, category types.JobCategory, nodeList s
 	}
 	c := float64(0)
 	nodes := strings.Split(nodeList, ",")
-	nl := float64(len(nodes))
+	nl := len(nodes)
 	slog.Debug(fmt.Sprintf("      nodeList length: %f", nl))
 	for _, n := range nodes {
 		slog.Debug(fmt.Sprintf("      node: %s", n))
@@ -299,7 +299,7 @@ func calculateWeight(ctx context.Context, category types.JobCategory, nodeList s
 		slog.Debug("      length is 0 or lower due to missing partitions, just counting as 0.0 weight")
 		return 0.0, nil
 	}
-	wt := c / nl
+	wt := c / float64(nl)
 	slog.Debug(fmt.Sprintf("      resulting weight: %f", wt))
 	slog.Debug(fmt.Sprintf("    Finished Calculating Weight for %s: %s", string(category), nodeList))
 	return wt, nil
