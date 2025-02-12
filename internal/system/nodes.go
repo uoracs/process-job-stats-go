@@ -14,6 +14,9 @@ import (
 func expandNodeList(ctx context.Context, nodeList string) (string, error) {
 	slog.Debug("  Started: Expanding nodelist")
 	slurmBinDir := ctx.Value(types.SlurmBinDirKey)
+	if strings.TrimSpace(nodeList) == "" {
+		return "", nil
+	}
 	if slurmBinDir == nil {
 		return "", fmt.Errorf("failed to find slurm bin dir in context")
 	}
