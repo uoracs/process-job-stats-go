@@ -3,7 +3,7 @@ package types
 type Key int
 
 const (
-	YesterdayKey Key = iota
+	ProcessDayKey Key = iota
 	SlurmBinDirKey
 	GpfsBinDirKey
 	OpenUsePartitionsKey
