@@ -99,56 +99,68 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	if !ok {
 		return nil, fmt.Errorf("failed to get PI for account: %s", j.Account)
 	}
+
 	j.AccountStorageGB, err = accountStorages.GetStorage(j.Account)
 	if !ok {
 		return nil, fmt.Errorf("failed to get account storage for account %s: %v", j.Account, err)
 	}
+
 	j.Category, err = categorizeJob(ctx, j.Partition)
 	if err != nil {
 		return nil, fmt.Errorf("failed to categorize job: %v", err)
 	}
+
 	j.OpenuseWeight, err = calculateWeight(ctx, types.JobCategoryOpen, j.NodeList)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate openuse weight: %v", err)
 	}
+
 	j.CondoWeight, err = calculateWeight(ctx, types.JobCategoryCondo, j.NodeList)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate condo weight: %v", err)
 	}
+
 	j.GPUs, err = calculateGPUsFromTRES(j.TRES)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse gpus from tres: %v", err)
 	}
+
 	j.WaitTimeHours, err = calculateWaitTimeHours(j.SubmitTime, j.StartTime)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate wait time hours: %v", err)
 	}
+
 	j.RunTimeHours, err = calculateRunTimeHours(j.Elapsed)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate run time hours: %v", err)
 	}
+
 	slog.Debug("  Calculating OpenUse CPU Hours")
 	j.CPUHoursOpenUse, err = calculateComputeHours(j.CPUs, j.OpenuseWeight, j.Elapsed)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate openuse cpu hours: %v", err)
 	}
+
 	slog.Debug("  Calculating Condo CPU Hours")
 	j.CPUHoursCondo, err = calculateComputeHours(j.CPUs, j.CondoWeight, j.Elapsed)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate condo cpu hours: %v", err)
 	}
 	j.CPUHoursTotal = j.CPUHoursOpenUse + j.CPUHoursCondo
+
 	slog.Debug("  Calculating OpenUse GPU Hours")
 	j.GPUHoursOpenUse, err = calculateComputeHours(j.GPUs, j.OpenuseWeight, j.Elapsed)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate openuse gpu hours: %v", err)
 	}
+
 	slog.Debug("  Calculating Condo GPU Hours")
-	j.GPUHoursOpenUse, err = calculateComputeHours(j.GPUs, j.CondoWeight, j.Elapsed)
+	j.GPUHoursCondo, err = calculateComputeHours(j.GPUs, j.CondoWeight, j.Elapsed)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate condo gpu hours: %v", err)
 	}
 	j.GPUHoursTotal = j.GPUHoursOpenUse + j.GPUHoursCondo
+
 	j.Date = *yesterdayDate
 
 	slog.Debug("  Finished: Parsing job")
