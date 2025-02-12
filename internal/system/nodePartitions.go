@@ -47,7 +47,6 @@ func NewNodePartitions(ctx context.Context) (*NodePartitions, error) {
 	m := make(map[string]string)
 
 	for _, line := range lines {
-		slog.Debug(fmt.Sprintf("    %s", line))
 		p := strings.Split(line, ",")
 		node := strings.TrimSpace(p[0])
 		partition := strings.TrimSpace(p[1])
