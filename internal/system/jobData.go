@@ -38,6 +38,7 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 	)
 	out, err := cmd.Output()
 	if err != nil {
+		// TODO(lcrown): this needs to show the correct stderr when it fails, also fix all the others
 		return nil, fmt.Errorf("failed to run command: %v: %v", err, out)
 	}
 
