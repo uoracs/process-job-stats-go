@@ -21,14 +21,14 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 	if slurmBinDir == nil {
 		return nil, fmt.Errorf("failed to find slurm bin dir in context")
 	}
-	yesterday := ctx.Value(types.YesterdayKey).(*string)
-	if yesterday == nil {
-		return nil, fmt.Errorf("failed to find yesterday in context")
+	processDayDate := ctx.Value(types.ProcessDayKey).(*string)
+	if processDayDate == nil {
+		return nil, fmt.Errorf("failed to find process day in context")
 	}
 
-	startTime := fmt.Sprintf("%sT00:00:00", *yesterday)
-	// endTime := fmt.Sprintf("%sT08:00:00", *yesterday)
-	endTime := fmt.Sprintf("%sT23:59:59", *yesterday)
+	startTime := fmt.Sprintf("%sT00:00:00", *processDayDate)
+	// endTime := fmt.Sprintf("%sT08:00:00", *processDayDate)
+	endTime := fmt.Sprintf("%sT23:59:59", *processDayDate)
 
 	sacctBin := fmt.Sprintf("%s/sacct", slurmBinDir)
 	cmd := exec.Command(

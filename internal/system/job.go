@@ -51,7 +51,7 @@ type Job struct {
 func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	var err error
 	var ok bool
-	yesterdayDate := ctx.Value(types.YesterdayKey).(*string)
+	processDayDate := ctx.Value(types.ProcessDayKey).(*string)
 	nodePartitions := ctx.Value(types.NodePartitionsKey).(*NodePartitions)
 	accountPIs := ctx.Value(types.AccountPIsKey).(*AccountPIs)
 	accountStorages := ctx.Value(types.AccountStoragesKey).(*AccountStorages)
@@ -158,7 +158,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	}
 	j.GPUHoursTotal = j.GPUHoursOpenUse + j.GPUHoursCondo
 
-	j.Date = *yesterdayDate
+	j.Date = *processDayDate
 
 	slog.Debug("  Finished: Parsing job")
 	return j, nil

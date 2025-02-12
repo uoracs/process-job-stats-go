@@ -35,21 +35,31 @@ var OPEN_USE_PARTITIONS = []string{
 }
 
 func main() {
-	outputFile := flag.String("output", "", "path to output file")
-	noHeader := flag.Bool("noheader", false, "don't show header row")
-	debug := flag.Bool("debug", false, "show debug output")
+	outputFileFlag := flag.String("output", "", "path to output file")
+	noHeaderFlag := flag.Bool("noheader", false, "don't show header row")
+	dayFlag := flag.String("day", "", "day to process in YYYY-mm-dd")
+	debugFlag := flag.Bool("debug", false, "show debug output")
 	flag.Parse()
 
 	logLevel := slog.LevelInfo
-	if *debug {
+	if *debugFlag {
 		logLevel = slog.LevelDebug
 	}
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
 	slog.SetDefault(logger)
 
+	processDayDate := time.Now().Add(-24 * time.Hour).Format("2006-01-02")
+	if *dayFlag != "" {
+		day, err := time.Parse("2006-01-02", *dayFlag)
+		if err != nil {
+			log.Fatal("Failed to parse provided date:", *dayFlag)
+		}
+		processDayDate = day.Format("2006-01-02")
+	}
+
 	output := os.Stdout
-	if *outputFile != "" {
-		output, err = os.OpenFile(*outputFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	if *outputFileFlag != "" {
+		output, err = os.OpenFile(*outputFileFlag, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 		if err != nil {
 			log.Fatal("Error opening output file:", err)
 			return
@@ -60,7 +70,7 @@ func main() {
 	writer := csv.NewWriter(output)
 	defer writer.Flush()
 
-	if !*noHeader {
+	if !*noHeaderFlag {
 		err := writer.Write(system.JobKeys())
 		if err != nil {
 			log.Fatal("Failed to write to output:", err)
@@ -70,8 +80,8 @@ func main() {
 	slog.Debug("Starting job processing")
 
 	ctx := context.Background()
-	yesterdayDate := time.Now().Add(-24 * time.Hour).Format("2006-01-02")
-	ctx = context.WithValue(ctx, types.YesterdayKey, &yesterdayDate)
+
+	ctx = context.WithValue(ctx, types.ProcessDayKey, &processDayDate)
 	ctx = context.WithValue(ctx, types.SlurmBinDirKey, SLURM_BIN_DIR)
 	ctx = context.WithValue(ctx, types.GpfsBinDirKey, GPFS_BIN_DIR)
 	ctx = context.WithValue(ctx, types.OpenUsePartitionsKey, &OPEN_USE_PARTITIONS)
