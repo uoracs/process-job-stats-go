@@ -50,7 +50,7 @@ func NewAccountStorages(ctx context.Context) (*AccountStorages, error) {
 		p := strings.Split(line, ",")
 		account := strings.TrimSpace(p[0])
 		storageGB := strings.TrimSpace(p[1])
-		slog.Debug("    Adding account->storageGB: %s->%s", account, storageGB)
+		slog.Debug(fmt.Sprintf("    Adding account->storageGB: %s->%s", account, storageGB))
 		m[account] = storageGB
 	}
 
