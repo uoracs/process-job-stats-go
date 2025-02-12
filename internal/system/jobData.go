@@ -25,11 +25,16 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 	if yesterday == nil {
 		return nil, fmt.Errorf("failed to find yesterday in context")
 	}
+
+	startTime := fmt.Sprintf("%sT00:00:00", *yesterday)
+	endTime := fmt.Sprintf("%sT08:00:00", *yesterday)
+	// endTime := fmt.Sprintf("%sT23:59:59", *yesterday)
+
 	sacctBin := fmt.Sprintf("%s/sacct", slurmBinDir)
 	cmd := exec.Command(
 		"bash",
 		"-c",
-		fmt.Sprintf("%s -X -P -n --starttime='%sT00:00:00' --endtime='%sT23:59:59' --state=F,CD --format=JobID,JobName,User,Account,Partition,Elapsed,NNodes,NCPUS,AllocTRES,Submit,Start,End,Nodelist", sacctBin, *yesterday, *yesterday),
+		fmt.Sprintf("%s -X -P -n --starttime='%s' --endtime='%s' --state=F,CD --format=JobID,JobName,User,Account,Partition,Elapsed,NNodes,NCPUS,AllocTRES,Submit,Start,End,Nodelist", sacctBin, startTime, endTime),
 	)
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
