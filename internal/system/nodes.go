@@ -38,7 +38,9 @@ func expandNodeList(ctx context.Context, nodeList string) (string, error) {
 			lines = append(lines, l)
 		}
 	}
+	nodes := strings.Join(lines, ",")
 
+	slog.Debug(fmt.Sprintf("    %v", nodes))
 	slog.Debug("  Finished: Expanding nodelist")
-	return strings.Join(lines, ","), nil
+	return nodes, nil
 }
