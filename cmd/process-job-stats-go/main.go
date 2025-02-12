@@ -41,6 +41,8 @@ func main() {
 	if *debug {
 		logLevel = slog.LevelDebug
 	}
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
+	slog.SetDefault(logger)
 
 	output := os.Stdout
 	if *outputFile != "" {
@@ -61,9 +63,6 @@ func main() {
 			log.Fatal("Failed to write to output:", err)
 		}
 	}
-
-	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
-	slog.SetDefault(logger)
 
 	slog.Debug("Starting job processing")
 
@@ -101,5 +100,6 @@ func main() {
 		if job != nil {
 			writer.Write(job.Fields())
 		}
+		os.Exit(0)
 	}
 }
