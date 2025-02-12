@@ -37,8 +37,10 @@ type Job struct {
 	GPUs             int
 	CPUHoursOpenUse  float64
 	CPUHoursCondo    float64
+	CPUHoursTotal    float64
 	GPUHoursOpenUse  float64
 	GPUHoursCondo    float64
+	GPUHoursTotal    float64
 	WaitTimeHours    float64
 	RunTimeHours     float64
 	Date             string
@@ -135,6 +137,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate condo cpu hours: %v", err)
 	}
+	j.CPUHoursTotal = j.CPUHoursOpenUse + j.CPUHoursCondo
 	slog.Debug("  Calculating OpenUse GPU Hours")
 	j.GPUHoursOpenUse, err = calculateComputeHours(j.GPUs, j.OpenuseWeight, j.Elapsed)
 	if err != nil {
@@ -145,6 +148,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate condo gpu hours: %v", err)
 	}
+	j.GPUHoursTotal = j.GPUHoursOpenUse + j.GPUHoursCondo
 	j.Date = *yesterdayDate
 
 	slog.Debug("  Finished: Parsing job")
@@ -172,8 +176,12 @@ func JobKeys() []string {
 		"OpenuseWeight",
 		"CondoWeight",
 		"GPUs",
-		"CPUHours",
-		"GPUHours",
+		"CPUHoursOpenUse",
+		"CPUHoursCondo",
+		"CPUHoursTotal",
+		"GPUHoursOpenUse",
+		"GPUHoursCondo",
+		"GPUHoursTotal",
 		"WaitTimeHours",
 		"RunTimeHours",
 		"Date",
@@ -203,8 +211,10 @@ func (j *Job) Fields() []string {
 		fmt.Sprintf("%d", j.GPUs),
 		fmt.Sprintf("%f", j.CPUHoursOpenUse),
 		fmt.Sprintf("%f", j.CPUHoursCondo),
+		fmt.Sprintf("%f", j.CPUHoursTotal),
 		fmt.Sprintf("%f", j.GPUHoursOpenUse),
 		fmt.Sprintf("%f", j.GPUHoursCondo),
+		fmt.Sprintf("%f", j.GPUHoursTotal),
 		fmt.Sprintf("%f", j.WaitTimeHours),
 		fmt.Sprintf("%f", j.RunTimeHours),
 		j.Date,
