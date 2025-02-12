@@ -240,11 +240,11 @@ func parseElapsedToSeconds(elapsed string) (int, error) {
 }
 
 func categorizeJob(ctx context.Context, partition string) (types.JobCategory, error) {
-	openusePartitions := ctx.Value(types.OpenUsePartitionsKey).([]string)
+	openusePartitions := ctx.Value(types.OpenUsePartitionsKey).(*[]string)
 	if openusePartitions == nil {
 		return types.JobCategoryUnknown, fmt.Errorf("failed to get openuse partitions from context")
 	}
-	if slices.Contains(openusePartitions, partition) {
+	if slices.Contains(*openusePartitions, partition) {
 		return types.JobCategoryOpen, nil
 	}
 	if partition == "preempt" {
