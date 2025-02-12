@@ -72,7 +72,7 @@ func main() {
 	ctx = context.WithValue(ctx, types.YesterdayKey, &yesterdayDate)
 	ctx = context.WithValue(ctx, types.SlurmBinDirKey, SLURM_BIN_DIR)
 	ctx = context.WithValue(ctx, types.GpfsBinDirKey, GPFS_BIN_DIR)
-	ctx = context.WithValue(ctx, types.OpenUsePartitionsKey, OPEN_USE_PARTITIONS)
+	ctx = context.WithValue(ctx, types.OpenUsePartitionsKey, &OPEN_USE_PARTITIONS)
 
 	rawJobData, err := system.NewRawJobData(ctx)
 	if err != nil {
