@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/csv"
 	"flag"
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -122,7 +123,7 @@ func worker(ctx context.Context, jobs <-chan string, results chan<- *system.Job)
 			log.Fatal("Failed to parse job:", err)
 		}
 		if job == nil {
-			slog.Info("Skipping job")
+			slog.Info(fmt.Sprintf("Skipping job: %s", j))
 			continue
 		}
 		results <- job
