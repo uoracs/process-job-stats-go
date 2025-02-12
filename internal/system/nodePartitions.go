@@ -50,7 +50,9 @@ func NewNodePartitions(ctx context.Context) (*NodePartitions, error) {
 	for _, line := range lines {
 		slog.Debug(fmt.Sprintf("    %s", line))
 		p := strings.Split(line, ",")
-		m[p[0]] = p[1]
+		node := strings.TrimSpace(p[0])
+		partition := strings.TrimSpace(p[1])
+		m[node] = partition
 	}
 
 	slog.Debug("  Finished: Getting Node -> Partition associations")
