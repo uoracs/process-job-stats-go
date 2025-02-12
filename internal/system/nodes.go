@@ -17,11 +17,11 @@ func expandNodeList(ctx context.Context, nodeList string) (string, error) {
 	if slurmBinDir == nil {
 		return "", fmt.Errorf("failed to find slurm bin dir in context")
 	}
-	sinfoBin := fmt.Sprintf("%s/sinfo", slurmBinDir)
+	scontrolBin := fmt.Sprintf("%s/scontrol", slurmBinDir)
 	cmd := exec.Command(
 		"bash",
 		"-c",
-		fmt.Sprintf("%s -N -n %s | sort | uniq", sinfoBin, nodeList),
+		fmt.Sprintf("%s show hostnames %s", scontrolBin, nodeList),
 	)
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
