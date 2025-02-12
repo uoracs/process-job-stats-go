@@ -38,7 +38,7 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 	)
 	out, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("failed to run command: %v", err)
+		return nil, fmt.Errorf("failed to run command: %v: %v", err, out)
 	}
 
 	stdoutStr := string(out)
