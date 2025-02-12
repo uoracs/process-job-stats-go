@@ -100,6 +100,6 @@ func main() {
 		if job != nil {
 			writer.Write(job.Fields())
 		}
-		os.Exit(0)
+		break
 	}
 }
