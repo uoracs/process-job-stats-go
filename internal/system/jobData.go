@@ -27,14 +27,9 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 	}
 	sacctBin := fmt.Sprintf("%s/sacct", slurmBinDir)
 	cmd := exec.Command(
-		sacctBin,
-		"-X",
-		"-P",
-		"-n",
-		fmt.Sprintf("--starttime='%sT00:00:00'", yesterday),
-		fmt.Sprintf("--endtime='%sT23:59:59'", yesterday),
-		"--state=F,CD",
-		"--format=JobID,JobName,User,Account,Partition,Elapsed,NNodes,NCPUS,AllocTRES,Submit,Start,End,Nodelist",
+		"bash",
+		"-c",
+		fmt.Sprintf("%s -X -P -n --starttime='%sT00:00:00' --endtime='%sT23:59:59' --state=F,CD --format=JobID,JobName,User,Account,Partition,Elapsed,NNodes,NCPUS,AllocTRES,Submit,Start,End,Nodelist", sacctBin, yesterday, yesterday)
 	)
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
