@@ -92,14 +92,35 @@ func main() {
 	ctx = context.WithValue(ctx, types.NodePartitionsKey, nodePartitions)
 	ctx = context.WithValue(ctx, types.AccountPIsKey, accountPIs)
 	ctx = context.WithValue(ctx, types.AccountStoragesKey, accountStorages)
+
+	jobCount := len(rawJobData.Jobs)
+	workCh := make(chan string, jobCount)
+	resultCh := make(chan *system.Job, jobCount)
+
+	workerCount := 1000
+	for range workerCount {
+		go worker(ctx, workCh, resultCh)
+	}
+
 	for _, js := range rawJobData.Jobs {
-		job, err := system.NewJob(ctx, js)
-		if err != nil {
-			log.Fatal("Failed to parse job:", err)
-		}
+		workCh <- js
+	}
+	close(workCh)
+
+	for range jobCount {
+		job := <-resultCh
 		if job != nil {
 			writer.Write(job.Fields())
 		}
-		break
+	}
+}
+
+func worker(ctx context.Context, jobs <-chan string, results chan<- *system.Job) {
+	for j := range jobs {
+		job, err := system.NewJob(ctx, j)
+		if err != nil {
+			log.Fatal("Failed to parse job:", err)
+		}
+		results <- job
 	}
 }
