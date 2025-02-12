@@ -32,7 +32,12 @@ func NewAccountPIs(ctx context.Context) (*AccountPIs, error) {
 	}
 
 	stdoutStr := outb.String()
-	lines := strings.Split(stdoutStr, "\n")
+	lines := []string{}
+	for _, l := range strings.Split(stdoutStr, "\n") {
+		if strings.TrimSpace(l) != "" {
+			lines = append(lines, l)
+		}
+	}
 
 	m := make(map[string]string)
 

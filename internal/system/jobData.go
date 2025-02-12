@@ -40,7 +40,12 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 	}
 
 	stdoutStr := outb.String()
-	lines := strings.Split(stdoutStr, "\n")
+	lines := []string{}
+	for _, l := range strings.Split(stdoutStr, "\n") {
+		if strings.TrimSpace(l) != "" {
+			lines = append(lines, l)
+		}
+	}
 
 	slog.Debug("  Finished: Getting jobs from sacct")
 	return &RawJobData{

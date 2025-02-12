@@ -32,7 +32,12 @@ func expandNodeList(ctx context.Context, nodeList string) (string, error) {
 	}
 
 	stdoutStr := outb.String()
-	lines := strings.Split(stdoutStr, "\n")
+	lines := []string{}
+	for _, l := range strings.Split(stdoutStr, "\n") {
+		if strings.TrimSpace(l) != "" {
+			lines = append(lines, l)
+		}
+	}
 
 	slog.Debug("  Finished: Expanding nodelist")
 	return strings.Join(lines, ","), nil
