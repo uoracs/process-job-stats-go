@@ -268,6 +268,7 @@ func calculateWeight(ctx context.Context, category types.JobCategory, nodeList s
 	if nodePartitions == nil {
 		return 0.0, fmt.Errorf("failed to unpack node partitions from context")
 	}
+	slog.Debug(fmt.Sprintf("      %v", nodePartitions))
 	c := float64(0)
 	nodes := strings.Split(nodeList, ",")
 	nl := len(nodes)
