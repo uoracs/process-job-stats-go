@@ -27,8 +27,8 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 	}
 
 	startTime := fmt.Sprintf("%sT00:00:00", *yesterday)
-	endTime := fmt.Sprintf("%sT08:00:00", *yesterday)
-	// endTime := fmt.Sprintf("%sT23:59:59", *yesterday)
+	// endTime := fmt.Sprintf("%sT08:00:00", *yesterday)
+	endTime := fmt.Sprintf("%sT23:59:59", *yesterday)
 
 	sacctBin := fmt.Sprintf("%s/sacct", slurmBinDir)
 	cmd := exec.Command(
