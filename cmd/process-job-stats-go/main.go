@@ -108,8 +108,7 @@ func main() {
 	}
 	close(workCh)
 
-	for range jobCount {
-		job := <-resultCh
+	for job := range resultCh {
 		if job != nil {
 			writer.Write(job.Fields())
 		}
