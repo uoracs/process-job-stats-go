@@ -50,6 +50,7 @@ func NewAccountPIs(ctx context.Context) (*AccountPIs, error) {
 
 	slog.Debug(fmt.Sprintf("    %v", m))
 	slog.Debug("  Finished: Getting Account -> PI associations")
+	slog.Debug(fmt.Sprintf("      %s", m["jamming"]))
 	return &AccountPIs{
 		data: m,
 	}, nil
