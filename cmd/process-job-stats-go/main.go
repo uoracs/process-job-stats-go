@@ -69,7 +69,7 @@ func main() {
 
 	ctx := context.Background()
 	yesterdayDate := time.Now().Add(-24 * time.Hour).Format("2006-01-02")
-	ctx = context.WithValue(ctx, types.YesterdayKey, yesterdayDate)
+	ctx = context.WithValue(ctx, types.YesterdayKey, &yesterdayDate)
 	ctx = context.WithValue(ctx, types.SlurmBinDirKey, SLURM_BIN_DIR)
 	ctx = context.WithValue(ctx, types.GpfsBinDirKey, GPFS_BIN_DIR)
 	ctx = context.WithValue(ctx, types.OpenUsePartitionsKey, OPEN_USE_PARTITIONS)
