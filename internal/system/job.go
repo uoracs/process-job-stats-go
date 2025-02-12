@@ -49,7 +49,7 @@ type Job struct {
 func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	var err error
 	var ok bool
-	yesterdayDate := ctx.Value(types.YesterdayKey).(*string)
+	yesterdayDate := ctx.Value(types.YesterdayKey).(string)
 	nodePartitions := ctx.Value(types.NodePartitionsKey).(*NodePartitions)
 	accountPIs := ctx.Value(types.AccountPIsKey).(*AccountPIs)
 	accountStorages := ctx.Value(types.AccountStoragesKey).(*AccountStorages)
