@@ -21,7 +21,7 @@ func NewAccountPIs(ctx context.Context) (*AccountPIs, error) {
 	cmd := exec.Command(
 		"bash",
 		"-c",
-		"find /gpfs/projects/* -maxdepth 0",
+		"s -l /gpfs/projects/ | awk '{print $3", "$9}'",
 	)
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
@@ -42,13 +42,9 @@ func NewAccountPIs(ctx context.Context) (*AccountPIs, error) {
 	m := make(map[string]string)
 
 	for _, line := range lines {
-		p := strings.Split(line, "/")
-		account := p[len(p)-1]
-		pi, err := getDirOwner(line)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get owner for directory: %v", err)
-		}
-		m[account] = pi
+		slog.Debug(fmt.Sprintf("    %s", line))
+		p := strings.Split(line, ",")
+		m[p[1]] = p[0]
 	}
 
 	slog.Debug("  Finished: Getting Account -> PI associations")
@@ -63,6 +59,7 @@ func (as *AccountPIs) GetPI(account string) (string, bool) {
 }
 
 func getDirOwner(dirPath string) (string, error) {
+	slog.Debug("    Getting Directory Owner")
 	fileInfo, err := os.Stat(dirPath)
 	if err != nil {
 		return "", err
