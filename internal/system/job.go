@@ -68,6 +68,13 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	j.Account = parts[3]
 	j.Partition = parts[4]
 	j.Elapsed = parts[5]
+	es, err := parseElapsedToSeconds(j.Elapsed)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse elapsed seconds: %v", err)
+	}
+	if es == 0 {
+		return nil, nil
+	}
 	j.NodeCount, err = strconv.Atoi(parts[6])
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse nodes: %v", err)

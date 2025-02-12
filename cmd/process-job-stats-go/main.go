@@ -121,6 +121,10 @@ func worker(ctx context.Context, jobs <-chan string, results chan<- *system.Job)
 		if err != nil {
 			log.Fatal("Failed to parse job:", err)
 		}
+		if job == nil {
+			slog.Info("Skipping job")
+			continue
+		}
 		results <- job
 	}
 }
