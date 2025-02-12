@@ -21,7 +21,7 @@ func NewAccountPIs(ctx context.Context) (*AccountPIs, error) {
 	cmd := exec.Command(
 		"bash",
 		"-c",
-		"ls -l /gpfs/projects/ | awk '{print $3", "$9}'",
+		"ls -l /gpfs/projects/ | awk '{print $3\", \"$9}'",
 	)
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
