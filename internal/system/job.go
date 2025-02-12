@@ -256,6 +256,7 @@ func categorizeJob(ctx context.Context, partition string) (types.JobCategory, er
 // This represents the weight of the nodes that ran in open-use nodes.
 // Used to multiply by things like CPU Hours, etc, to properly weight jobs.
 func calculateWeight(ctx context.Context, category types.JobCategory, nodeList string) (float64, error) {
+	slog.Debug(fmt.Sprintf("    Started Calculating Weight for %s: %s", string(category), nodeList))
 	if !slices.Contains([]types.JobCategory{types.JobCategoryOpen, types.JobCategoryCondo}, category) {
 		return 0.0, fmt.Errorf("category must be JobCategoryOpen or JobCategoryCondo")
 	}
@@ -270,27 +271,38 @@ func calculateWeight(ctx context.Context, category types.JobCategory, nodeList s
 	c := float64(0)
 	nodes := strings.Split(nodeList, ",")
 	nl := float64(len(nodes))
+	slog.Debug(fmt.Sprintf("      nodeList length: %f", nl))
 	for _, n := range nodes {
+		slog.Debug(fmt.Sprintf("      node: %s", n))
 		partition, ok := nodePartitions.GetPartition(n)
 		if !ok { // if partition not found, scale back the metric
+			slog.Debug("        partition not found, reducing nodeList length by 1")
 			nl -= 1
 			continue
 		}
+		slog.Debug(fmt.Sprintf("        partition: %s", partition))
 		isOpenuse := false
 		if slices.Contains(*openusePartitions, partition) {
 			isOpenuse = true
 		}
+		slog.Debug(fmt.Sprintf("        open use?: %v", isOpenuse))
 		if category == types.JobCategoryOpen && isOpenuse {
+			slog.Debug("        increasing count for open use by 1")
 			c += 1
 		}
 		if category == types.JobCategoryCondo && !isOpenuse {
+			slog.Debug("        increasing count for condo by 1")
 			c += 1
 		}
 	}
 	if nl <= 0 {
+		slog.Debug("      length is 0 or lower due to missing partitions, just counting as 0.0 weight")
 		return 0.0, nil
 	}
-	return c / nl, nil
+	wt := c / nl
+	slog.Debug(fmt.Sprintf("      resulting weight: %f", wt))
+	slog.Debug(fmt.Sprintf("    Finished Calculating Weight for %s: %s", string(category), nodeList))
+	return wt, nil
 }
 
 func calculateGPUsFromTRES(tres string) (int, error) {
