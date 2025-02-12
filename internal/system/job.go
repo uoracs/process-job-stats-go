@@ -95,7 +95,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 
 	j.PI, ok = accountPIs.GetPI(j.Account)
 	if !ok {
-		return nil, fmt.Errorf("failed to get PI for account %s: %v", j.Account, err)
+		return nil, fmt.Errorf("failed to get PI for account: %s", j.Account)
 	}
 	j.AccountStorageGB, err = accountStorages.GetStorage(j.Account)
 	if !ok {

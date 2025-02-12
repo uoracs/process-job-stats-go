@@ -47,6 +47,7 @@ func NewAccountPIs(ctx context.Context) (*AccountPIs, error) {
 		m[p[1]] = p[0]
 	}
 
+	slog.Debug(fmt.Sprintf("    %v", m))
 	slog.Debug("  Finished: Getting Account -> PI associations")
 	return &AccountPIs{
 		data: m,
