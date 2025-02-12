@@ -25,10 +25,9 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 	if processDayDate == nil {
 		return nil, fmt.Errorf("failed to find process day in context")
 	}
-
 	startTime := fmt.Sprintf("%sT00:00:00", *processDayDate)
-	// endTime := fmt.Sprintf("%sT08:00:00", *processDayDate)
 	endTime := fmt.Sprintf("%sT23:59:59", *processDayDate)
+	slog.Debug(fmt.Sprintf("    date range: %s -> %s", startTime, endTime))
 
 	sacctBin := fmt.Sprintf("%s/sacct", slurmBinDir)
 	cmd := exec.Command(

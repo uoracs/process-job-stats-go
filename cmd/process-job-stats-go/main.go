@@ -56,6 +56,7 @@ func main() {
 		}
 		processDayDate = day.Format("2006-01-02")
 	}
+	slog.Debug(fmt.Sprintf("Processing jobs for day: %s", processDayDate))
 
 	output := os.Stdout
 	if *outputFileFlag != "" {
