@@ -58,8 +58,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	}
 	slog.Debug("  Starting: Parsing job")
 	slog.Debug(fmt.Sprintf("    %s", jobString))
-	parts := strings.Split(jobString, ",")
-	slog.Debug(fmt.Sprintf("    %v", parts))
+	parts := strings.Split(jobString, "|")
 	if parts[0] == "JobID" {
 		return nil, nil
 	}
