@@ -42,10 +42,9 @@ func NewAccountPIs(ctx context.Context) (*AccountPIs, error) {
 	m := make(map[string]string)
 
 	for _, line := range lines {
-		slog.Debug(fmt.Sprintf("    %s", line))
 		p := strings.Split(line, ",")
 		slog.Debug(fmt.Sprintf("    Adding account->pi: %s->%s", p[1], p[0]))
-		m[p[1]] = p[0]
+		m[strings.TrimSpace(p[1])] = strings.TrimSpace(p[0])
 	}
 
 	slog.Debug(fmt.Sprintf("    %v", m))
