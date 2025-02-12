@@ -25,7 +25,7 @@ func NewNodePartitions(ctx context.Context) (*NodePartitions, error) {
 	cmd := exec.Command(
 		"bash",
 		"-c",
-		fmt.Sprintf("%s -h -o '%n,%P'", sinfoBin),
+		fmt.Sprintf("%s -h -o '%%n,%%P'", sinfoBin),
 	)
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
