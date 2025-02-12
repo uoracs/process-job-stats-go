@@ -31,8 +31,8 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 		"-X",
 		"-P",
 		"-n",
-		"--starttime='{YESTERDAY_DATE}T00:00:00'",
-		"--endtime='{YESTERDAY_DATE}T23:59:59'",
+		fmt.Sprintf("--starttime='%sT00:00:00'", yesterday),
+		fmt.Sprintf("--endtime='%sT23:59:59'", yesterday),
 		"--state=F,CD",
 		"--format=JobID,JobName,User,Account,Partition,Elapsed,NNodes,NCPUS,AllocTRES,Submit,Start,End,Nodelist",
 	)

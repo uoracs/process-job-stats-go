@@ -1,6 +1,7 @@
 package system
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -22,12 +23,15 @@ func expandNodeList(ctx context.Context, nodeList string) (string, error) {
 		"-c",
 		fmt.Sprintf("%s -N -n %s | sort | uniq", sinfoBin, nodeList),
 	)
-	out, err := cmd.Output()
+	var outb, errb bytes.Buffer
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	err := cmd.Run()
 	if err != nil {
-		return "", fmt.Errorf("failed to run command: %v", err)
+		return "", fmt.Errorf("failed to run command: %v", errb.String())
 	}
 
-	stdoutStr := string(out)
+	stdoutStr := outb.String()
 	lines := strings.Split(stdoutStr, "\n")
 
 	slog.Debug("  Finished: Expanding nodelist")

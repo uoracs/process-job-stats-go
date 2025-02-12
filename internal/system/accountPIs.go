@@ -1,6 +1,7 @@
 package system
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -22,12 +23,15 @@ func NewAccountPIs(ctx context.Context) (*AccountPIs, error) {
 		"-c",
 		"find /gpfs/projects/* -maxdepth 0",
 	)
-	out, err := cmd.Output()
+	var outb, errb bytes.Buffer
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	err := cmd.Run()
 	if err != nil {
-		return nil, fmt.Errorf("failed to run command: %v", err)
+		return nil, fmt.Errorf("failed to run command: %v", errb.String())
 	}
 
-	stdoutStr := string(out)
+	stdoutStr := outb.String()
 	lines := strings.Split(stdoutStr, "\n")
 
 	m := make(map[string]string)

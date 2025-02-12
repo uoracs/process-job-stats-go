@@ -1,6 +1,7 @@
 package system
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -27,12 +28,15 @@ func NewAccountStorages(ctx context.Context) (*AccountStorages, error) {
 		"-c",
 		fmt.Sprintf("%s -j fs1 --block-size g | awk '/FILESET/ {print $1\",\"$4}'", mmrepquotaBin),
 	)
-	out, err := cmd.Output()
+	var outb, errb bytes.Buffer
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	err := cmd.Run()
 	if err != nil {
-		return nil, fmt.Errorf("failed to run command: %v", err)
+		return nil, fmt.Errorf("failed to run command: %v", errb.String())
 	}
 
-	stdoutStr := string(out)
+	stdoutStr := outb.String()
 	lines := strings.Split(stdoutStr, "\n")
 
 	m := make(map[string]string)
