@@ -57,6 +57,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 		return nil, fmt.Errorf("failed to unpack data from context")
 	}
 	slog.Debug("  Starting: Parsing job")
+	slog.Debug(fmt.Sprintf("    %s", jobString))
 	parts := strings.Split(jobString, ",")
 	if parts[0] == "JobID" {
 		return nil, nil
