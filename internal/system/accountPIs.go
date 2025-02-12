@@ -43,8 +43,10 @@ func NewAccountPIs(ctx context.Context) (*AccountPIs, error) {
 
 	for _, line := range lines {
 		p := strings.Split(line, ",")
-		slog.Debug(fmt.Sprintf("    Adding account->pi: %s->%s", p[1], p[0]))
-		m[strings.TrimSpace(p[1])] = strings.TrimSpace(p[0])
+		account := strings.TrimSpace(p[1])
+		pi := strings.TrimSpace(p[0])
+		slog.Debug(fmt.Sprintf("    Adding account->pi: %s->%s", account, pi))
+		m[account] = pi
 	}
 
 	slog.Debug(fmt.Sprintf("    %v", m))
@@ -58,7 +60,6 @@ func NewAccountPIs(ctx context.Context) (*AccountPIs, error) {
 func (as *AccountPIs) GetPI(account string) (string, bool) {
 	slog.Debug(fmt.Sprintf("  Getting Account PI for: %s", account))
 	p, ok := as.data[account]
-	slog.Debug(fmt.Sprintf("    PI:%s, ok:%s", p, ok))
 	return p, ok
 }
 
