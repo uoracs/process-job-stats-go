@@ -55,6 +55,8 @@ func NewAccountPIs(ctx context.Context) (*AccountPIs, error) {
 }
 
 func (as *AccountPIs) GetPI(account string) (string, bool) {
+	slog.Debug(fmt.Sprintf("  Getting Account PI for: %s", account))
+	slog.Debug(fmt.Sprintf("    %v", as.data))
 	p, ok := as.data[account]
 	slog.Debug(fmt.Sprintf("    PI:%s, ok:%s", p, ok))
 	return p, ok
