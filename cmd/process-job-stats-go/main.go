@@ -97,7 +97,7 @@ func main() {
 	workCh := make(chan string, jobCount)
 	resultCh := make(chan *system.Job, jobCount)
 
-	workerCount := 10000
+	workerCount := 1000
 	for range workerCount {
 		go worker(ctx, workCh, resultCh)
 	}
