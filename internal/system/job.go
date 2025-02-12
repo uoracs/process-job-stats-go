@@ -342,9 +342,14 @@ func calculateRunTimeHours(elapsed string) (float64, error) {
 }
 
 func calculateComputeHours(number int, weight float64, elapsed string) (float64, error) {
+	slog.Debug("  Starting Calculation of Compute Hours")
 	es, err := parseElapsedToSeconds(elapsed)
+	slog.Debug(fmt.Sprintf("  elapsed seconds: %d", es))
 	if err != nil {
 		return 0.0, fmt.Errorf("failed to calculate run time hours: %v", err)
 	}
-	return float64(number) * weight * float64(es) / 60 / 60, nil
+	hours := float64(number) * weight * float64(es) / 60 / 60
+	slog.Debug(fmt.Sprintf("  elapsed hours: %f", hours))
+	slog.Debug("  Finished Calculation of Compute Hours")
+	return hours, nil
 }
