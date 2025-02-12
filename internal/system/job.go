@@ -125,18 +125,22 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate run time hours: %v", err)
 	}
+	slog.Debug("  Calculating OpenUse CPU Hours")
 	j.CPUHoursOpenUse, err = calculateComputeHours(j.CPUs, j.OpenuseWeight, j.Elapsed)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate openuse cpu hours: %v", err)
 	}
+	slog.Debug("  Calculating Condo CPU Hours")
 	j.CPUHoursCondo, err = calculateComputeHours(j.CPUs, j.CondoWeight, j.Elapsed)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate condo cpu hours: %v", err)
 	}
+	slog.Debug("  Calculating OpenUse GPU Hours")
 	j.GPUHoursOpenUse, err = calculateComputeHours(j.GPUs, j.OpenuseWeight, j.Elapsed)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate openuse gpu hours: %v", err)
 	}
+	slog.Debug("  Calculating Condo GPU Hours")
 	j.GPUHoursOpenUse, err = calculateComputeHours(j.GPUs, j.CondoWeight, j.Elapsed)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate condo gpu hours: %v", err)
