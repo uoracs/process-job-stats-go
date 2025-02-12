@@ -1,6 +1,7 @@
 package system
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -24,7 +25,6 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 	if yesterday == nil {
 		return nil, fmt.Errorf("failed to find yesterday in context")
 	}
-
 	sacctBin := fmt.Sprintf("%s/sacct", slurmBinDir)
 	cmd := exec.Command(
 		sacctBin,
@@ -36,13 +36,15 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 		"--state=F,CD",
 		"--format=JobID,JobName,User,Account,Partition,Elapsed,NNodes,NCPUS,AllocTRES,Submit,Start,End,Nodelist",
 	)
-	out, err := cmd.Output()
+	var outb, errb bytes.Buffer
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	err := cmd.Run()
 	if err != nil {
-		// TODO(lcrown): this needs to show the correct stderr when it fails, also fix all the others
-		return nil, fmt.Errorf("failed to run command: %v: %v", err, out)
+		return nil, fmt.Errorf("failed to run command: %v: %v", err, errb.String())
 	}
 
-	stdoutStr := string(out)
+	stdoutStr := outb.String()
 	lines := strings.Split(stdoutStr, "\n")
 
 	slog.Debug("  Finished: Getting jobs from sacct")
