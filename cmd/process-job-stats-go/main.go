@@ -8,6 +8,7 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/lcrownover/process-job-stats-go/internal/system"
@@ -15,6 +16,7 @@ import (
 )
 
 var err error
+var wg sync.WaitGroup
 
 const SLURM_BIN_DIR = "/gpfs/t2/slurm/apps/current/bin"
 const GPFS_BIN_DIR = "/usr/lpp/mmfs/bin"
@@ -99,14 +101,23 @@ func main() {
 	resultCh := make(chan *system.Job, jobCount)
 
 	workerCount := 1000
-	for range workerCount {
-		go worker(ctx, workCh, resultCh)
+	for i := 0; i < workerCount; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			worker(ctx, workCh, resultCh)
+		}()
 	}
 
 	for _, js := range rawJobData.Jobs {
 		workCh <- js
 	}
 	close(workCh)
+
+	go func() {
+		wg.Wait()
+		close(resultCh)
+	}()
 
 	for job := range resultCh {
 		if job != nil {
