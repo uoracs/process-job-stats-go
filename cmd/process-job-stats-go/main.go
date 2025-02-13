@@ -39,6 +39,7 @@ func main() {
 	noHeaderFlag := flag.Bool("noheader", false, "don't show header row")
 	dayFlag := flag.String("day", "", "day to process in YYYY-mm-dd")
 	debugFlag := flag.Bool("debug", false, "show debug output")
+	workersFlag := flag.Int("workers", 16, "number of workers")
 	flag.Parse()
 
 	logLevel := slog.LevelInfo
@@ -113,7 +114,7 @@ func main() {
 
 	slog.Info(fmt.Sprintf("Processing ~%d jobs", jobCount))
 
-	workerCount := 1000
+	workerCount := *workersFlag
 	for i := 0; i < workerCount; i++ {
 		wg.Add(1)
 		go func() {
