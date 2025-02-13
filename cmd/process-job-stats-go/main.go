@@ -78,7 +78,7 @@ func main() {
 		}
 	}
 
-	slog.Debug("Starting job processing")
+	slog.Info("Starting job processing")
 
 	ctx := context.Background()
 
@@ -110,6 +110,8 @@ func main() {
 	jobCount := len(rawJobData.Jobs)
 	workCh := make(chan string, jobCount)
 	resultCh := make(chan *system.Job, jobCount)
+
+	slog.Info(fmt.Sprintf("Processing ~%d jobs", jobCount))
 
 	workerCount := 1000
 	for i := 0; i < workerCount; i++ {
