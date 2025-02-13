@@ -38,9 +38,13 @@ func NewNodePartitions(ctx context.Context) (*NodePartitions, error) {
 	stdoutStr := outb.String()
 	lines := []string{}
 	for _, l := range strings.Split(stdoutStr, "\n") {
-		if strings.TrimSpace(l) != "" {
-			lines = append(lines, l)
+		if strings.TrimSpace(l) == "" {
+			continue
 		}
+		if l == "preempt" {
+			continue
+		}
+		lines = append(lines, l)
 	}
 
 	m := make(map[string]string)
