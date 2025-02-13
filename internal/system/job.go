@@ -55,6 +55,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	nodePartitions := ctx.Value(types.NodePartitionsKey).(*NodePartitions)
 	accountPIs := ctx.Value(types.AccountPIsKey).(*AccountPIs)
 	accountStorages := ctx.Value(types.AccountStoragesKey).(*AccountStorages)
+	nlc := ctx.Value(types.NodeListCacheKey).(*nodeListCache)
 	if nodePartitions == nil || accountPIs == nil || accountStorages == nil {
 		return nil, fmt.Errorf("failed to unpack data from context")
 	}
@@ -88,7 +89,6 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	j.StartTime = parts[10]
 	j.EndTime = parts[11]
 
-	nlc := NewNodeListCache()
 	j.NodeList, err = expandNodeList(ctx, nlc, parts[12])
 	if err != nil {
 		return nil, fmt.Errorf("failed to expand nodelist: %v", err)

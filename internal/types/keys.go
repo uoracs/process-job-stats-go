@@ -10,4 +10,5 @@ const (
 	AccountPIsKey
 	AccountStoragesKey
 	NodePartitionsKey
+	NodeListCacheKey
 )
