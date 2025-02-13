@@ -42,7 +42,7 @@ func expandNodeList(ctx context.Context, nlc *nodeListCache, nodeList string) (s
 	// try the cache first
 	nodes, ok := nlc.Read(nodeList)
 	if ok {
-		slog.Info(fmt.Sprintf("Found nodelist in cache: %s->%s", nodeList, nodes))
+		slog.Debug(fmt.Sprintf("    Found nodelist in cache: %s->%s", nodeList, nodes))
 		return nodes, nil
 	}
 	slurmBinDir := ctx.Value(types.SlurmBinDirKey)
@@ -72,7 +72,7 @@ func expandNodeList(ctx context.Context, nlc *nodeListCache, nodeList string) (s
 	}
 	nodes = strings.Join(lines, ",")
 
-	slog.Info(fmt.Sprintf("Writing nodelist to cache: %s->%s", nodeList, nodes))
+	slog.Debug(fmt.Sprintf("    Writing nodelist to cache: %s->%s", nodeList, nodes))
 	nlc.Write(nodeList, nodes)
 
 	slog.Debug(fmt.Sprintf("    %v", nodes))
