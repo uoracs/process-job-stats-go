@@ -41,9 +41,6 @@ func NewNodePartitions(ctx context.Context) (*NodePartitions, error) {
 		if strings.TrimSpace(l) == "" {
 			continue
 		}
-		if l == "preempt" {
-			continue
-		}
 		lines = append(lines, l)
 	}
 
@@ -53,6 +50,9 @@ func NewNodePartitions(ctx context.Context) (*NodePartitions, error) {
 		p := strings.Split(line, ",")
 		node := strings.TrimSpace(p[0])
 		partition := strings.TrimSpace(p[1])
+		if partition == "preempt" {
+			continue
+		}
 		slog.Debug(fmt.Sprintf("    Adding node->partition: %s->%s", node, partition))
 		m[node] = partition
 	}
