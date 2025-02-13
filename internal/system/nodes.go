@@ -37,7 +37,7 @@ func (n *nodeListCache) Write(key, value string) {
 	n.data[key] = value
 }
 
-func expandNodeList(ctx context.Context, nlc nodeListCache, nodeList string) (string, error) {
+func expandNodeList(ctx context.Context, nlc *nodeListCache, nodeList string) (string, error) {
 	slog.Debug("  Started: Expanding nodelist")
 	// try the cache first
 	nodes, ok := nlc.Read(nodeList)
