@@ -112,7 +112,7 @@ func main() {
 	workCh := make(chan string, jobCount)
 	resultCh := make(chan *system.Job, jobCount)
 
-	slog.Info(fmt.Sprintf("Processing ~%d jobs", jobCount))
+	slog.Info(fmt.Sprintf("Processing %d jobs", jobCount))
 
 	workerCount := *workersFlag
 	for i := 0; i < workerCount; i++ {
