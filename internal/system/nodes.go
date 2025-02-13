@@ -25,12 +25,9 @@ func NewNodeListCache() *nodeListCache {
 }
 
 func (n *nodeListCache) Read(key string) (string, bool) {
-	slog.Info("reading from cache")
 	n.mutex.RLock()
 	defer n.mutex.RUnlock()
 	v, ok := n.data[key]
-	slog.Info(fmt.Sprintf("cache: %s, %v", v, ok))
-	slog.Info("reading from cache")
 	return v, ok
 }
 
