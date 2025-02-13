@@ -8,6 +8,7 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"runtime/pprof"
 	"sync"
 	"time"
 
@@ -40,6 +41,7 @@ func main() {
 	dayFlag := flag.String("day", "", "day to process in YYYY-mm-dd")
 	debugFlag := flag.Bool("debug", false, "show debug output")
 	workersFlag := flag.Int("workers", 16, "number of workers")
+	cpuProfileFlag := flag.String("cpuprofile", "", "write cpu profile to this path")
 	flag.Parse()
 
 	logLevel := slog.LevelInfo
@@ -48,6 +50,18 @@ func main() {
 	}
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
 	slog.SetDefault(logger)
+
+	if *cpuProfileFlag != "" {
+		f, err := os.Create(*cpuProfileFlag)
+		if err != nil {
+			log.Fatal("Failed to create CPU profile: ", err)
+		}
+		defer f.Close() // error handling omitted for example
+		if err := pprof.StartCPUProfile(f); err != nil {
+			log.Fatal("Failed to start CPU profile: ", err)
+		}
+		defer pprof.StopCPUProfile()
+	}
 
 	processDayDate := time.Now().Add(-24 * time.Hour).Format("2006-01-02")
 	if *dayFlag != "" {
