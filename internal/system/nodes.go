@@ -7,12 +7,43 @@ import (
 	"log/slog"
 	"os/exec"
 	"strings"
+	"sync"
 
 	"github.com/lcrownover/process-job-stats-go/internal/types"
 )
 
-func expandNodeList(ctx context.Context, nodeList string) (string, error) {
+type nodeListCache struct {
+	data  map[string]string
+	mutex *sync.RWMutex
+}
+
+func NewNodeListCache() *nodeListCache {
+	return &nodeListCache{
+		data:  make(map[string]string),
+		mutex: &sync.RWMutex{},
+	}
+}
+
+func (n *nodeListCache) Read(key string) (string, bool) {
+	n.mutex.RLock()
+	defer n.mutex.RUnlock()
+	v, ok := n.data[key]
+	return v, ok
+}
+
+func (n *nodeListCache) Write(key, value string) {
+	n.mutex.Lock()
+	defer n.mutex.Unlock()
+	n.data[key] = value
+}
+
+func expandNodeList(ctx context.Context, nlc nodeListCache, nodeList string) (string, error) {
 	slog.Debug("  Started: Expanding nodelist")
+	// try the cache first
+	nodes, ok := nlc.Read(nodeList)
+	if ok {
+		return nodes, nil
+	}
 	slurmBinDir := ctx.Value(types.SlurmBinDirKey)
 	if slurmBinDir == nil {
 		return "", fmt.Errorf("failed to find slurm bin dir in context")
@@ -38,7 +69,9 @@ func expandNodeList(ctx context.Context, nodeList string) (string, error) {
 			lines = append(lines, l)
 		}
 	}
-	nodes := strings.Join(lines, ",")
+	nodes = strings.Join(lines, ",")
+
+	nlc.Write(nodeList, nodes)
 
 	slog.Debug(fmt.Sprintf("    %v", nodes))
 	slog.Debug("  Finished: Expanding nodelist")

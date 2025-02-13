@@ -87,7 +87,9 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	j.SubmitTime = parts[9]
 	j.StartTime = parts[10]
 	j.EndTime = parts[11]
-	j.NodeList, err = expandNodeList(ctx, parts[12])
+
+	nlc := NewNodeListCache()
+	j.NodeList, err = expandNodeList(ctx, nlc, parts[12])
 	if err != nil {
 		return nil, fmt.Errorf("failed to expand nodelist: %v", err)
 	}
