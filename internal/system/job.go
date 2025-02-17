@@ -27,6 +27,7 @@ type Job struct {
 	StartTime  string
 	EndTime    string
 	NodeList   string
+	State      types.JobState
 
 	// Generated Fields
 	PI               string
@@ -73,7 +74,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse elapsed seconds: %v", err)
 	}
-	if es == 0 {
+	if es < 1 {
 		return nil, nil
 	}
 	j.NodeCount, err = strconv.Atoi(parts[6])
@@ -93,6 +94,8 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to expand nodelist: %v", err)
 	}
+
+	j.State, err = getJobState(parts[13])
 
 	j.PI, ok = accountPIs.GetPI(j.Account)
 	if !ok {
@@ -181,6 +184,7 @@ func JobKeys() []string {
 		"StartTime",
 		"EndTime",
 		"NodeList",
+		"State",
 		"PI",
 		"AccountStorageGB",
 		"Category",
@@ -214,6 +218,7 @@ func (j *Job) Fields() []string {
 		j.StartTime,
 		j.EndTime,
 		j.NodeList,
+		string(j.State),
 		j.PI,
 		fmt.Sprintf("%d", j.AccountStorageGB),
 		string(j.Category),
@@ -379,4 +384,16 @@ func calculateComputeHours(processors int, weight float64, elapsed string) (floa
 	slog.Debug(fmt.Sprintf("  elapsed hours: %f", hours))
 	slog.Debug("  Finished Calculation of Compute Hours")
 	return hours, nil
+}
+
+func getJobState(stateString string) (types.JobState, error) {
+	switch stateString {
+	case "COMPLETED":
+		return types.JobStateCompleted, nil
+	case "FAILED":
+		return types.JobStateFailed, nil
+	case "CANCELLED":
+		return types.JobStateCancelled, nil
+	}
+	return types.JobStateUnknown, fmt.Errorf("failed to find job state from string: %s", stateString)
 }

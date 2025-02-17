@@ -33,7 +33,7 @@ func NewRawJobData(ctx context.Context) (*RawJobData, error) {
 	cmd := exec.Command(
 		"bash",
 		"-c",
-		fmt.Sprintf("%s -X -P -n --starttime='%s' --endtime='%s' --state=F,CD --format=JobID,JobName,User,Account,Partition,Elapsed,NNodes,NCPUS,AllocTRES,Submit,Start,End,Nodelist", sacctBin, startTime, endTime),
+		fmt.Sprintf("%s -X -P -n --starttime='%s' --endtime='%s' --state=F,CD,CA --format=JobID,JobName,User,Account,Partition,Elapsed,NNodes,NCPUS,AllocTRES,Submit,Start,End,Nodelist,State", sacctBin, startTime, endTime),
 	)
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
