@@ -4,7 +4,7 @@ type JobCategory string
 
 const (
 	JobCategoryOpen    JobCategory = "openuse"
-	JobCategoryDonated JobCategory = "donated"
+	JobCategoryPreempt JobCategory = "preempt"
 	JobCategoryCondo   JobCategory = "condo"
 	JobCategoryUnknown JobCategory = "unknown"
 )

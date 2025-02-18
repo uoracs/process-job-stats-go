@@ -278,7 +278,7 @@ func categorizeJob(ctx context.Context, partition string) (types.JobCategory, er
 		return types.JobCategoryOpen, nil
 	}
 	if partition == "preempt" {
-		return types.JobCategoryDonated, nil
+		return types.JobCategoryPreempt, nil
 	}
 	return types.JobCategoryCondo, nil
 }
