@@ -387,12 +387,13 @@ func calculateComputeHours(processors int, weight float64, elapsed string) (floa
 }
 
 func getJobState(stateString string) (types.JobState, error) {
-	switch stateString {
-	case "COMPLETED":
+	if stateString == "COMPLETED" {
 		return types.JobStateCompleted, nil
-	case "FAILED":
+	}
+	if stateString == "FAILED" {
 		return types.JobStateFailed, nil
-	case "CANCELLED":
+	}
+	if strings.Contains(stateString, "CANCELLED") {
 		return types.JobStateCancelled, nil
 	}
 	return types.JobStateUnknown, fmt.Errorf("failed to find job state from string: %s", stateString)
