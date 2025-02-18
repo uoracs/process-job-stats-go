@@ -70,13 +70,6 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	j.Account = parts[3]
 	j.Partition = parts[4]
 	j.Elapsed = parts[5]
-	es, err := parseElapsedToSeconds(j.Elapsed)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse elapsed seconds: %v", err)
-	}
-	if es < 1 {
-		return nil, nil
-	}
 	j.NodeCount, err = strconv.Atoi(parts[6])
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse nodes: %v", err)
@@ -94,8 +87,15 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to expand nodelist: %v", err)
 	}
+	// jobs that were cancelled before running
+	if j.NodeList == "" {
+		return nil, nil
+	}
 
 	j.State, err = getJobState(parts[13])
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse job state: %v", err)
+	}
 
 	j.PI, ok = accountPIs.GetPI(j.Account)
 	if !ok {

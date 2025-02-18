@@ -39,6 +39,10 @@ func (n *nodeListCache) Write(key, value string) {
 
 func expandNodeList(ctx context.Context, nlc *nodeListCache, nodeList string) (string, error) {
 	slog.Debug("  Started: Expanding nodelist")
+	// if it's "None assigned", it means the job was scheduled but cancelled, we can skip these
+	if nodeList == "None assigned" {
+		return "", nil
+	}
 	// try the cache first
 	nodes, ok := nlc.Read(nodeList)
 	if ok {
