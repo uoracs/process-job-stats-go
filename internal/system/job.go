@@ -176,7 +176,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	}
 
 	j.FirstName = strings.Fields(j.FullName)[0]
-	j.FirstName = strings.Join(strings.Fields(j.FullName)[1:], " ")
+	j.LastName = strings.Join(strings.Fields(j.FullName)[1:], " ")
 
 	j.ServiceUnits = calculateServiceUnits(j.CPUHoursOpenUse, j.CPUHoursCondo, j.GPUHoursOpenUse, j.GPUHoursCondo)
 
