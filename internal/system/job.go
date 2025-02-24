@@ -179,7 +179,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 		return nil, fmt.Errorf("failed to get full name for username: %v", err)
 	}
 
-	j.ServiceUnits = calculateServiceUnits(j.CPUHoursOpenUse, j.CPUHoursCondo, j.GPUHoursOpenUse, j.GPUHoursCondo)
+	j.ServiceUnits = calculateServiceUnits(j.Category, j.CPUHoursOpenUse, j.CPUHoursCondo, j.GPUHoursOpenUse, j.GPUHoursCondo)
 
 	slog.Debug("  Finished: Parsing job")
 	return j, nil
