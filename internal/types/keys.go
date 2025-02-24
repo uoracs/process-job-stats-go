@@ -11,6 +11,7 @@ const (
 	AccountStoragesKey
 	NodePartitionsKey
 	NodeListCacheKey
+	UserListCacheKey
 )
 
 type JobState string

@@ -119,11 +119,13 @@ func main() {
 		log.Fatal("Failed to get account storage map:", err)
 	}
 	nlc := system.NewNodeListCache()
+	ulc := system.NewUserListCache()
 
 	ctx = context.WithValue(ctx, types.NodePartitionsKey, nodePartitions)
 	ctx = context.WithValue(ctx, types.AccountPIsKey, accountPIs)
 	ctx = context.WithValue(ctx, types.AccountStoragesKey, accountStorages)
 	ctx = context.WithValue(ctx, types.NodeListCacheKey, nlc)
+	ctx = context.WithValue(ctx, types.UserListCacheKey, ulc)
 
 	jobCount := len(rawJobData.Jobs)
 	workCh := make(chan string, jobCount)

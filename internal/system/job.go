@@ -45,6 +45,10 @@ type Job struct {
 	WaitTimeHours    float64
 	RunTimeHours     float64
 	Date             string
+	FullName         string
+	FirstName        string
+	LastName         string
+	ServiceUnits     float64
 }
 
 // 29148459_925|ld_stats_array|akapoor|kernlab|kern|00:07:23|1|8|billing=8,cpu=8,mem=64G,node=1|2025-02-03T23:38:14|2025-02-03T23:53:21|n0335
@@ -57,6 +61,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	accountPIs := ctx.Value(types.AccountPIsKey).(*AccountPIs)
 	accountStorages := ctx.Value(types.AccountStoragesKey).(*AccountStorages)
 	nlc := ctx.Value(types.NodeListCacheKey).(*nodeListCache)
+	ulc := ctx.Value(types.UserListCacheKey).(*userListCache)
 	if nodePartitions == nil || accountPIs == nil || accountStorages == nil {
 		return nil, fmt.Errorf("failed to unpack data from context")
 	}
@@ -165,6 +170,16 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 
 	j.Date = *processDayDate
 
+	j.FullName, err = getUserFullName(ulc, j.Username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get full name for username: %v", err)
+	}
+
+	j.FirstName = strings.Fields(j.FullName)[0]
+	j.FirstName = strings.Join(strings.Fields(j.FullName)[1:], " ")
+
+	j.ServiceUnits = calculateServiceUnits(j.CPUHoursOpenUse, j.CPUHoursCondo, j.GPUHoursOpenUse, j.GPUHoursCondo)
+
 	slog.Debug("  Finished: Parsing job")
 	return j, nil
 }
@@ -200,6 +215,10 @@ func JobKeys() []string {
 		"WaitTimeHours",
 		"RunTimeHours",
 		"Date",
+		"FullName",
+		"FirstName",
+		"LastName",
+		"ServiceUnits",
 	}
 }
 
@@ -234,6 +253,10 @@ func (j *Job) Fields() []string {
 		fmt.Sprintf("%f", j.WaitTimeHours),
 		fmt.Sprintf("%f", j.RunTimeHours),
 		j.Date,
+		j.FullName,
+		j.FirstName,
+		j.LastName,
+		fmt.Sprintf("%f", j.ServiceUnits),
 	}
 }
 
