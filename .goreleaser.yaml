@@ -18,6 +18,7 @@ builds:
       - CGO_ENABLED=0
     goos:
       - linux
+    main: ./cmd/process-job-stats-go/main.go
 
 archives:
   - format: tar.gz
