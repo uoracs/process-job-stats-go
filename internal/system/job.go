@@ -30,7 +30,8 @@ type Job struct {
 	State      types.JobState
 
 	// Generated Fields
-	PI               string
+	PIUsername       string
+	PIFullName       string
 	AccountStorageGB int
 	Category         types.JobCategory
 	OpenuseWeight    float64
@@ -45,9 +46,7 @@ type Job struct {
 	WaitTimeHours    float64
 	RunTimeHours     float64
 	Date             string
-	FullName         string
-	FirstName        string
-	LastName         string
+	UserFullName     string
 	ServiceUnits     float64
 }
 
@@ -102,9 +101,14 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 		return nil, fmt.Errorf("failed to parse job state: %v", err)
 	}
 
-	j.PI, ok = accountPIs.GetPI(j.Account)
+	j.PIUsername, ok = accountPIs.GetPI(j.Account)
 	if !ok {
 		return nil, fmt.Errorf("failed to get PI for account: %s", j.Account)
+	}
+
+	j.PIFullName, err = getUserFullName(ulc, j.PIUsername)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get full name for PI username: %v", err)
 	}
 
 	j.AccountStorageGB, err = accountStorages.GetStorage(j.Account)
@@ -170,13 +174,10 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 
 	j.Date = *processDayDate
 
-	j.FullName, err = getUserFullName(ulc, j.Username)
+	j.UserFullName, err = getUserFullName(ulc, j.Username)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get full name for username: %v", err)
 	}
-
-	j.FirstName = strings.Fields(j.FullName)[0]
-	j.LastName = strings.Join(strings.Fields(j.FullName)[1:], " ")
 
 	j.ServiceUnits = calculateServiceUnits(j.CPUHoursOpenUse, j.CPUHoursCondo, j.GPUHoursOpenUse, j.GPUHoursCondo)
 
@@ -200,7 +201,8 @@ func JobKeys() []string {
 		"EndTime",
 		"NodeList",
 		"State",
-		"PI",
+		"PIUsername",
+		"PIFullName",
 		"AccountStorageGB",
 		"Category",
 		"OpenuseWeight",
@@ -215,9 +217,7 @@ func JobKeys() []string {
 		"WaitTimeHours",
 		"RunTimeHours",
 		"Date",
-		"FullName",
-		"FirstName",
-		"LastName",
+		"UserFullName",
 		"ServiceUnits",
 	}
 }
@@ -238,7 +238,8 @@ func (j *Job) Fields() []string {
 		j.EndTime,
 		j.NodeList,
 		string(j.State),
-		j.PI,
+		j.PIUsername,
+		j.PIFullName,
 		fmt.Sprintf("%d", j.AccountStorageGB),
 		string(j.Category),
 		fmt.Sprintf("%f", j.OpenuseWeight),
@@ -253,9 +254,7 @@ func (j *Job) Fields() []string {
 		fmt.Sprintf("%f", j.WaitTimeHours),
 		fmt.Sprintf("%f", j.RunTimeHours),
 		j.Date,
-		j.FullName,
-		j.FirstName,
-		j.LastName,
+		j.UserFullName,
 		fmt.Sprintf("%f", j.ServiceUnits),
 	}
 }
