@@ -50,8 +50,8 @@ type Job struct {
 	ServiceUnits     float64
 }
 
-// 29148459_925|ld_stats_array|akapoor|kernlab|kern|00:07:23|1|8|billing=8,cpu=8,mem=64G,node=1|2025-02-03T23:38:14|2025-02-03T23:53:21|n0335
 // job_id|job_name|username|account|partition|elapsed|nodes|cpus|tres|submit_time|start_time|nodelist
+// 29148459_925|ld_stats_array|akapoor|kernlab|kern|00:07:23|1|8|billing=8,cpu=8,mem=64G,node=1|2025-02-03T23:38:14|2025-02-03T23:53:21|n0335
 func NewJob(ctx context.Context, jobString string) (*Job, error) {
 	var err error
 	var ok bool
@@ -179,7 +179,7 @@ func NewJob(ctx context.Context, jobString string) (*Job, error) {
 		return nil, fmt.Errorf("failed to get full name for username: %v", err)
 	}
 
-	j.ServiceUnits = calculateServiceUnits(j.Category, j.CPUHoursOpenUse, j.CPUHoursCondo, j.GPUHoursOpenUse, j.GPUHoursCondo)
+	j.ServiceUnits = calculateServiceUnits(j.Category, j.Partition, j.CPUHoursOpenUse, j.CPUHoursCondo, j.GPUHoursOpenUse, j.GPUHoursCondo)
 
 	slog.Debug("  Finished: Parsing job")
 	return j, nil
