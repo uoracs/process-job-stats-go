@@ -1,6 +1,8 @@
 package system
 
 import (
+	"fmt"
+	"log/slog"
 	"slices"
 
 	"github.com/lcrownover/process-job-stats-go/internal/types"
@@ -20,15 +22,22 @@ func calculateServiceUnits(category types.JobCategory, partition string, cpuHour
 	// else -> return open use cpus + 3x gpus
 	if category == types.JobCategoryOpen {
 		if slices.Contains([]string{"memory", "memorylong"}, partition) {
-			return (cpuHoursOpenUse * 2) + (gpuHoursOpenUse * 3)
+			su := (cpuHoursOpenUse * 2) + (gpuHoursOpenUse * 3)
+			slog.Debug(fmt.Sprintf("    service units: high memory partition: %f", su))
+			return su
 		} else {
-			return cpuHoursOpenUse + (gpuHoursOpenUse * 3)
+			su := cpuHoursOpenUse + (gpuHoursOpenUse * 3)
+			slog.Debug(fmt.Sprintf("    service units: standard partition: %f", su))
+			return su
 		}
 	}
 	// condo -> return 0
 	if category == types.JobCategoryCondo {
+		slog.Debug("    service units: condo job: 0")
 		return 0
 	}
 	// otherwise its preempt
-	return (((cpuHoursOpenUse + cpuHoursCondo) * 1) + ((gpuHoursOpenUse + gpuHoursCondo) * 3)) * float64(preemptWeight)
+	su := ((cpuHoursOpenUse + cpuHoursCondo) * 1) + ((gpuHoursOpenUse + gpuHoursCondo) * 3) * float64(preemptWeight)
+	slog.Debug(fmt.Sprintf("    service units: preempt job: %f", su))
+	return su
 }
