@@ -19,9 +19,6 @@ import (
 var err error
 var wg sync.WaitGroup
 
-const SLURM_BIN_DIR = "/gpfs/t2/slurm/apps/current/bin"
-const GPFS_BIN_DIR = "/usr/lpp/mmfs/bin"
-
 var OPEN_USE_PARTITIONS = []string{
 	"compute",
 	"compute_intel",
@@ -42,6 +39,12 @@ func main() {
 	debugFlag := flag.Bool("debug", false, "show debug output")
 	workersFlag := flag.Int("workers", 16, "number of workers")
 	cpuProfileFlag := flag.String("cpuprofile", "", "write cpu profile to this path")
+
+	slurmBinDirFlag := flag.String("slurm-bin-dir", "/gpfs/t2/slurm/apps/current/bin", "directory to find the slurm binaries")
+	gpfsBinDirFlag := flag.String("gpfs-bin-dir", "/usr/lpp/mmfs/bin", "directory to find the gpfs binaries")
+
+	skipEmptyDaysFlag := flag.Bool("skip-empty-days", false, "if no jobs, skip writing the output file")
+
 	flag.Parse()
 
 	logLevel := slog.LevelInfo
@@ -98,8 +101,8 @@ func main() {
 	ctx := context.Background()
 
 	ctx = context.WithValue(ctx, types.ProcessDayKey, &processDayDate)
-	ctx = context.WithValue(ctx, types.SlurmBinDirKey, SLURM_BIN_DIR)
-	ctx = context.WithValue(ctx, types.GpfsBinDirKey, GPFS_BIN_DIR)
+	ctx = context.WithValue(ctx, types.SlurmBinDirKey, *slurmBinDirFlag)
+	ctx = context.WithValue(ctx, types.GpfsBinDirKey, *gpfsBinDirFlag)
 	ctx = context.WithValue(ctx, types.OpenUsePartitionsKey, &OPEN_USE_PARTITIONS)
 
 	rawJobData, err := system.NewRawJobData(ctx)
@@ -134,7 +137,7 @@ func main() {
 	slog.Info(fmt.Sprintf("Processing %d jobs", jobCount))
 
 	workerCount := *workersFlag
-	for i := 0; i < workerCount; i++ {
+	for range workerCount {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
@@ -153,7 +156,7 @@ func main() {
 	}()
 
 	for job := range resultCh {
-		if job != nil {
+		if job != nil && !*skipEmptyDaysFlag {
 			writer.Write(job.Fields())
 		}
 	}
