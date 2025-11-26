@@ -163,7 +163,8 @@ func worker(ctx context.Context, jobs <-chan string, results chan<- *system.Job)
 	for j := range jobs {
 		job, err := system.NewJob(ctx, j)
 		if err != nil {
-			log.Fatal("Failed to parse job:", err)
+			slog.Error(fmt.Sprintf("Failed to parse job: %v", err))
+			continue
 		}
 		if job == nil {
 			slog.Info(fmt.Sprintf("Skipping job: %s", j))
